@@ -152,6 +152,9 @@ public class DriverMainMenu extends AppCompatActivity {
             case R.id.delivery:
                 startDelivery();
                 return true;
+            case R.id.completedItems:
+                editCompletedOrders();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -221,6 +224,15 @@ public class DriverMainMenu extends AppCompatActivity {
         //need to send user type so that the user can be located in the database
         Bundle driverBundle = new Bundle();
         Intent intent = new Intent(DriverMainMenu.this, EditPasswordActivity.class);
+        driverBundle.putSerializable("User", user);
+        intent.putExtras(driverBundle);
+        intent.putExtra("UserType", "Driver");
+        startActivity(intent);
+    }
+
+    private void editCompletedOrders(){
+        Bundle driverBundle = new Bundle();
+        Intent intent = new Intent(DriverMainMenu.this, CompetedOrdersDriverActivity.class);
         driverBundle.putSerializable("User", user);
         intent.putExtras(driverBundle);
         intent.putExtra("UserType", "Driver");

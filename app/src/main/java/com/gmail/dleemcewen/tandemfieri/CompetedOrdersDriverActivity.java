@@ -1,26 +1,19 @@
 package com.gmail.dleemcewen.tandemfieri;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Spinner;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrdersListAdapterAddress;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
-import com.gmail.dleemcewen.tandemfieri.Repositories.Orders;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,13 +28,10 @@ public class CompetedOrdersDriverActivity extends AppCompatActivity {
     private User user;
     private String customerId;
     private DatabaseReference mDatabaseDelivery;
-    private Order order;
     private Context context;
     private ListView ordersListView;
     private List<Order> entities;
-    private Orders<Order> orders;
     private OrdersListAdapterAddress listAdapter;
-    private String currentFilter = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +44,13 @@ public class CompetedOrdersDriverActivity extends AppCompatActivity {
         context = this;
 
         ordersListView = (ListView) findViewById(R.id.orders);
+        ordersListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                setNotComplete((Order)listAdapter.getItem(i));
+                return true;
+            }
+        });
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getAuthUserID());
         mDatabaseDelivery = FirebaseDatabase.getInstance().getReference().child("Delivery").child(user.getAuthUserID()).child("Order");
@@ -61,19 +58,12 @@ public class CompetedOrdersDriverActivity extends AppCompatActivity {
         mDatabaseDelivery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //Toast.makeText(getApplicationContext(), ""+dataSnapshot.child("Order").getValue(Order.class), Toast.LENGTH_LONG).show();
-                //order = dataSnapshot.child("Order").getValue(Order.class);
-
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    order = child.getValue(Order.class);
-                    //Toast.makeText(getApplicationContext(), ""+child.child("Order").getValue(), Toast.LENGTH_LONG).show();
-                    //order = child.child("Order").getValue(Order.class);
-                }
-
                 entities = new ArrayList<Order>();
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    entities.add(child.getValue(Order.class));
+                    for (DataSnapshot child2 : child.getChildren()) {
+                        entities.add(child2.getValue(Order.class));
+                    }
                     //Toast.makeText(getApplicationContext(), ""+child.child("Order").getValue(), Toast.LENGTH_LONG).show();
                     //order = child.child("Order").getValue(Order.class);
                 }
@@ -86,152 +76,43 @@ public class CompetedOrdersDriverActivity extends AppCompatActivity {
             }
         });
 
-        Spinner spinner = (Spinner) findViewById(R.id.OrderStatus);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                currentFilter = adapterView.getItemAtPosition(i).toString().equalsIgnoreCase("all")? "":adapterView.getItemAtPosition(i).toString();
-                loadList();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
     }//end onCreate
 
-    //create menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.driver_menu, menu);
-        return true;
+    private void setNotComplete(Order item) {
+        final Order temp = item;
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+                        temp.setStatus(OrderEnum.EN_ROUTE);
+                        
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+                dialog.dismiss();
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Are you sure you wish to mark this order as not complete?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
     }
 
-    //determine which menu option was selected and call that option's action method
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.sign_out:
-                signOut();
-                return true;
-            case R.id.edit_personal_info:
-                editPersonalInformation();
-                return true;
-            case R.id.edit_password:
-                editPassword();
-                return true;
-            case R.id.delivery:
-                startDelivery();
-                return true;
-            case R.id.myDeliveries:
-                showMyDeliveries();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    //called when user selects sign out from the drop down menu
-    private void signOut(){
-        FirebaseAuth.getInstance().signOut();
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("Exit me", true);
-        startActivity(intent);
-        finish();
-    }
-
-    private void startDelivery(){
-        Bundle driverBundle = new Bundle();
-        Intent intent = new Intent(DriverMainMenu.this, DriverDeliveryActivity.class);
-        driverBundle.putString("customerId", customerId);
-        driverBundle.putSerializable("User", user);
-        intent.putExtras(driverBundle);
-        startActivity(intent);
-    }
-
-    private void connect(){
-        Intent intent = new Intent(DriverMainMenu.this, ConnectActivity.class);
-        intent.putExtra("ID", user.getAuthUserID());
-        startActivity(intent);
-    }
-
-    /**
-     * showMyDeliveries displays all of the deliveries assigned to the current driver
-     */
-    private void showMyDeliveries() {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        DriverOrdersFragment driverOrders = new DriverOrdersFragment();
-        Bundle args = new Bundle();
-        args.putString("driverId", user.getAuthUserID());
-        args.putString("restaurantId", user.getRestaurantId());
-        args.putSerializable("Order", order);
-        driverOrders.setArguments(args);
-
-        fragmentTransaction.add(R.id.activity_driver_main_menu, driverOrders);
-        fragmentTransaction.commit();
-    }
-
-    //called when user selects edit information from the drop down menu
-    private  void editPersonalInformation(){
-        //need to send user type so that the user can be located in the database
-        Bundle driverBundle = new Bundle();
-        Intent intent = new Intent(DriverMainMenu.this, EditAccountActivity.class);
-        driverBundle.putSerializable("User", user);
-        intent.putExtras(driverBundle);
-        intent.putExtra("UserType", "Driver");
-        startActivity(intent);
-    }
-
-    //called when user selects edit password from the drop down menu
-    private void editPassword(){
-        //need to send user type so that the user can be located in the database
-        Bundle driverBundle = new Bundle();
-        Intent intent = new Intent(DriverMainMenu.this, EditPasswordActivity.class);
-        driverBundle.putSerializable("User", user);
-        intent.putExtras(driverBundle);
-        intent.putExtra("UserType", "Driver");
-        startActivity(intent);
-    }
 
     private void loadList() {
-        OrderEnum match = null;
         List<Order> toShow = new ArrayList<>();
-        switch(currentFilter){
-            case "":
-                match= null;
-                break;
-            case "CREATING":
-                match= OrderEnum.CREATING;
-                break;
-            case "PAYMENT PENDING":
-                match = OrderEnum.PAYMENT_PENDING;
-                break;
-            case "EN ROUTE":
-                match = OrderEnum.EN_ROUTE;
-                break;
-            case "COMPLETE":
-                match = OrderEnum.COMPLETE;
-                break;
+
+        for (Order o : entities) {
+            if (o.getStatus() == OrderEnum.COMPLETE)
+                toShow.add(o);
         }
-        if(match!=null){
-            for(Order o : entities){
-                if(o.getStatus() == match) toShow.add(o);
-            }
-            listAdapter = new OrdersListAdapterAddress(context,toShow);
-            ordersListView.setAdapter(listAdapter);
-        }
-        else{
-            if(entities!=null) {
-                listAdapter = new OrdersListAdapterAddress(context, entities);
-                ordersListView.setAdapter(listAdapter);
-            }
-        }
+        listAdapter = new OrdersListAdapterAddress(context, toShow);
+        listAdapter.setUseDate(true);
+        ordersListView.setAdapter(listAdapter);
     }
 }

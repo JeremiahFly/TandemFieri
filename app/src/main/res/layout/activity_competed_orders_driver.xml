@@ -8,6 +8,31 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.gmail.dleemcewen.tandemfieri.CompetedOrdersDriver">
+    tools:context="com.gmail.dleemcewen.tandemfieri.CompetedOrdersDriverActivity">
 
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Completed Orders"
+        android:gravity="center"
+        android:textSize="35sp"/>
+
+    <TextView
+        android:id="@+id/instructions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:text="Hold on order to mark as not complete"
+        android:gravity="center"
+        android:textSize="20sp"/>
+
+
+    <ListView
+        android:id="@+id/orders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/instructions"
+        android:layout_alignParentBottom="true"
+        ></ListView>
 </RelativeLayout>
