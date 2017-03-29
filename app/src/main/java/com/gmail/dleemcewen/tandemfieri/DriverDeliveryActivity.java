@@ -197,8 +197,10 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
                 if((currentLocation.distanceTo(customerLocation) * 0.000621371) > 0.1){
                     Toast.makeText(getApplicationContext(), "You are not there yet", Toast.LENGTH_LONG).show();
                 }else {
-                    mDatabaseRemoval.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).removeValue();
-                    mDatabaseRemoval.child("Delivery").child(user.getAuthUserID()).child("currentOrderId").removeValue();
+                    //We need to keep the delivery in the table so that the driver can have a record of it
+                    //mDatabaseRemoval.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).removeValue();
+                    //mDatabaseRemoval.child("Delivery").child(user.getAuthUserID()).child("currentOrderId").removeValue();
+                    mDatabaseRemoval.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("status").setValue(OrderEnum.COMPLETE);
                     mDatabaseRemoval.child("Delivery Location").child(order.getCustomerId()).child("Latitude").removeValue();
                     mDatabaseRemoval.child("Delivery Location").child(order.getCustomerId()).child("Longitude").removeValue();
                     mDatabaseRemoval.child("Order").child(ownerId).child(order.getOrderId()).child("status").setValue(OrderEnum.COMPLETE);
