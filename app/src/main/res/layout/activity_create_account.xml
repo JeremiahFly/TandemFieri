@@ -29,49 +29,28 @@
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
-        <com.github.florent37.materialtextfield.MaterialTextField
-            android:id="@+id/material_text1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:mtf_backgroundColor="#6699ff"
-            app:mtf_cardCollapsedHeight="3dp"
-            app:mtf_image="@drawable/ic_person"
-            app:mtf_labelColor="#303030"
-            app:mtf_openKeyboardOnFocus="true">
-
-            <EditText
+            <com.rengwuxian.materialedittext.MaterialEditText
                 android:id="@+id/firstName"
-                android:layout_width="match_parent"
+                android:layout_width="0sp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:ems="10"
                 android:hint="@string/hintFirstName"
                 android:inputType="textPersonName"
-                android:textColor="#ffffff"
-                android:textSize="14sp" />
-        </com.github.florent37.materialtextfield.MaterialTextField>
+                app:met_primaryColor="@color/colorPrimary"
+                android:textSize="14sp"
+                android:layout_marginRight="5sp"/>
 
-        <com.github.florent37.materialtextfield.MaterialTextField
-            android:id="@+id/material_text2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:mtf_backgroundColor="#6699ff"
-            app:mtf_cardCollapsedHeight="3dp"
-            app:mtf_image="@drawable/ic_person"
-            app:mtf_labelColor="#303030"
-            app:mtf_openKeyboardOnFocus="true">
-
-            <EditText
+            <com.rengwuxian.materialedittext.MaterialEditText
                 android:id="@+id/lastName"
-                android:layout_width="match_parent"
+                android:layout_width="0sp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:ems="10"
                 android:hint="@string/hintLastName"
                 android:inputType="textPersonName"
-                android:textColor="#ffffff"
+                app:met_primaryColor="@color/colorPrimary"
                 android:textSize="14sp" />
-        </com.github.florent37.materialtextfield.MaterialTextField>
     </LinearLayout>
 
     <LinearLayout
@@ -82,28 +61,15 @@
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
-        <com.github.florent37.materialtextfield.MaterialTextField
-            android:id="@+id/material_text3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:layout_marginBottom="0dp"
-            app:mtf_backgroundColor="#6699ff"
-            app:mtf_cardCollapsedHeight="3dp"
-            app:mtf_image="@drawable/ic_business_building"
-            app:mtf_labelColor="#303030"
-            app:mtf_openKeyboardOnFocus="true">
-
-        <EditText
+        <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/address"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="4"
             android:hint="@string/hintAddress"
             android:inputType="textPostalAddress"
-            android:textColor="#ffffff"
+            app:met_primaryColor="@color/colorPrimary"
             android:textSize="14sp" />
-
-        </com.github.florent37.materialtextfield.MaterialTextField>
 
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/location_button"
@@ -115,7 +81,7 @@
 
     </LinearLayout>
 
-    <EditText
+    <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -127,6 +93,7 @@
         android:layout_marginTop="20dp"
         android:hint="@string/hintCity"
         android:inputType="textPersonName"
+        app:met_primaryColor="@color/colorPrimary"
         android:textSize="14sp" />
 
     <LinearLayout
@@ -153,7 +120,7 @@
             android:paddingRight="20dp"
             android:textSize="14sp" />
 
-        <EditText
+        <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/zip"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -163,10 +130,11 @@
             android:ems="10"
             android:hint="@string/hintZip"
             android:inputType="text|number"
+            app:met_primaryColor="@color/colorPrimary"
             android:textSize="14sp" />
     </LinearLayout>
 
-    <EditText
+    <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -178,10 +146,11 @@
         android:layout_marginTop="20dp"
         android:hint="@string/hintPhone"
         android:inputType="text|number"
+        app:met_primaryColor="@color/colorPrimary"
         android:textSize="14sp" />
 
 
-    <EditText
+    <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -193,6 +162,7 @@
         android:layout_marginTop="20dp"
         android:hint="@string/hintEmail"
         android:inputType="textEmailAddress"
+        app:met_primaryColor="@color/colorPrimary"
         android:textSize="14sp" />
 
     <com.beardedhen.androidbootstrap.BootstrapButton
