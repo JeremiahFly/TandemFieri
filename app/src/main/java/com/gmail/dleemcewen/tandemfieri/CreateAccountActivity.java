@@ -20,7 +20,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
-import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.gmail.dleemcewen.tandemfieri.Constants.AddressConstants;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.AsyncHttpResponse;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
@@ -204,13 +203,18 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
 
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
-            Address addressOutput = resultData.getParcelable(AddressConstants.RESULT_DATA_KEY);
+            final Address addressOutput = resultData.getParcelable(AddressConstants.RESULT_DATA_KEY);
             if (addressOutput == null) {
                 Toast.makeText(getApplicationContext(), "Couldn't Retrieve Location.", Toast.LENGTH_SHORT).show();
             }
 
             String [] statesArray = getResources().getStringArray(R.array.states);
-            address.setText(addressOutput.getAddressLine(0));
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    address.setText(addressOutput.getAddressLine(0));
+                }
+            });
             for (int i = 0; i < statesArray.length; i++) {
                 if (addressOutput.getAdminArea().trim().equals(statesArray[i]))
                     states.setSelection(i);
